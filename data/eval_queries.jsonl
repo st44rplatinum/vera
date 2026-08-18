@@ -1,0 +1,30 @@
+{"id": "q01", "category": "paraphrase", "query": "dry mouth after radiation treatment"}
+{"id": "q02", "category": "paraphrase", "query": "skin burns caused by radiotherapy"}
+{"id": "q03", "category": "paraphrase", "query": "lung inflammation after chest radiation"}
+{"id": "q04", "category": "paraphrase", "query": "sore painful mouth during cancer treatment"}
+{"id": "q05", "category": "paraphrase", "query": "brain tissue damage after radiosurgery"}
+{"id": "q06", "category": "paraphrase", "query": "adjusting the treatment plan as the tumour shrinks"}
+{"id": "q07", "category": "paraphrase", "query": "tumours elsewhere shrinking after treating only one site"}
+{"id": "q08", "category": "paraphrase", "query": "giving fewer but larger radiation doses"}
+{"id": "q09", "category": "paraphrase", "query": "heart damage from breast cancer radiation"}
+{"id": "q10", "category": "paraphrase", "query": "treating a cancer that came back in the same place"}
+{"id": "q11", "category": "exact", "query": "VMAT volumetric modulated arc therapy"}
+{"id": "q12", "category": "exact", "query": "NTCP normal tissue complication probability model"}
+{"id": "q13", "category": "exact", "query": "alpha beta ratio linear quadratic model"}
+{"id": "q14", "category": "exact", "query": "Monte Carlo dose calculation"}
+{"id": "q15", "category": "exact", "query": "linear energy transfer LET proton"}
+{"id": "q16", "category": "exact", "query": "SBRT stereotactic body radiotherapy"}
+{"id": "q17", "category": "exact", "query": "deformable image registration"}
+{"id": "q18", "category": "exact", "query": "dose volume histogram organs at risk constraints"}
+{"id": "q19", "category": "exact", "query": "MR-linac MRI-guided radiotherapy"}
+{"id": "q20", "category": "exact", "query": "total body irradiation conditioning"}
+{"id": "q21", "category": "conceptual", "query": "how does proton therapy spare healthy tissue"}
+{"id": "q22", "category": "conceptual", "query": "immunotherapy combined with radiation therapy"}
+{"id": "q23", "category": "conceptual", "query": "deep learning for automatic organ contouring"}
+{"id": "q24", "category": "conceptual", "query": "quality of life after prostate cancer radiotherapy"}
+{"id": "q25", "category": "conceptual", "query": "managing breathing motion during treatment delivery"}
+{"id": "q26", "category": "conceptual", "query": "radiotherapy for cancer spread to only a few sites"}
+{"id": "q27", "category": "conceptual", "query": "predicting treatment outcome from imaging features"}
+{"id": "q28", "category": "conceptual", "query": "brachytherapy for cervical cancer"}
+{"id": "q29", "category": "conceptual", "query": "late effects of radiotherapy in children"}
+{"id": "q30", "category": "conceptual", "query": "randomised trial of hypofractionated breast radiotherapy"}

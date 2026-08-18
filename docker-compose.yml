@@ -1,0 +1,34 @@
+services:
+  db:
+    # pgvector image = stock Postgres 17 + the vector extension already compiled in,
+    # so checkpoint 5 needs no new container.
+    image: pgvector/pgvector:pg17
+    container_name: radonc-db
+    environment:
+      POSTGRES_USER: radonc
+      POSTGRES_PASSWORD: radonc
+      POSTGRES_DB: radonc
+    ports:
+      # 5440, not 5432/5433/5434: the patient-management-system stack on this
+      # machine already publishes 5433 (pms-postgres-auth) and 5434
+      # (pms-postgres-patient). Whichever stack starts second loses the bind and
+      # exits, and the symptom is a confusing "password authentication failed"
+      # from the *other* project's Postgres answering on the port.
+      - "5440:5432"
+    # Docker gives a container 64 MB of /dev/shm. Postgres allocates parallel
+    # workers' memory there, so building the HNSW index with a 1 GB
+    # maintenance_work_mem fails with "could not resize shared memory segment ...
+    # No space left on device" -- a disk-full message that has nothing to do with
+    # disk, on a host with 380 GB free.
+    shm_size: 1gb
+    volumes:
+      - radonc_pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro   # *.sql here run once, on first boot
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U radonc -d radonc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  radonc_pgdata:

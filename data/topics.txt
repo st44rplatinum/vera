@@ -1,0 +1,85 @@
+# Broad radiation oncology coverage. One PMC query per line, in real PMC search
+# syntax. Blank lines and #-comments are ignored.
+#
+# {RT} expands to a radiotherapy term group restricted to Title/Abstract -- see
+# RT_TERMS in radonc/fetch_pmc.py. Terms are pinned to [TIAB] because PMC's
+# default All Fields search matches reference lists, which drags in papers that
+# merely *cite* radiation oncology work.
+#
+# The fetcher divides --limit across these lines and de-duplicates PMCIDs, so
+# overlapping topics cost nothing.
+
+# --- modalities and delivery ---
+"stereotactic body radiotherapy"[TIAB] OR SBRT[TIAB] OR SABR[TIAB]
+"stereotactic radiosurgery"[TIAB]
+"intensity modulated radiotherapy"[TIAB] OR IMRT[TIAB]
+"volumetric modulated arc therapy"[TIAB] OR VMAT[TIAB]
+"proton beam therapy"[TIAB] OR "proton therapy"[TIAB]
+"carbon ion"[TIAB] AND {RT}
+brachytherapy[TIAB]
+"image guided radiotherapy"[TIAB] OR IGRT[TIAB]
+"adaptive radiotherapy"[TIAB]
+"MR-linac"[TIAB] OR "MRI-guided radiotherapy"[TIAB]
+"intraoperative radiotherapy"[TIAB]
+"total body irradiation"[TIAB]
+
+# --- disease sites ---
+"prostate cancer"[TIAB] AND {RT}
+"breast cancer"[TIAB] AND {RT}
+("head and neck cancer"[TIAB] OR "oropharyngeal cancer"[TIAB]) AND {RT}
+"non-small cell lung cancer"[TIAB] AND {RT}
+"small cell lung cancer"[TIAB] AND {RT}
+"rectal cancer"[TIAB] AND {RT}
+"esophageal cancer"[TIAB] AND {RT}
+"pancreatic cancer"[TIAB] AND {RT}
+"hepatocellular carcinoma"[TIAB] AND {RT}
+"cervical cancer"[TIAB] AND {RT}
+"endometrial cancer"[TIAB] AND {RT}
+"bladder cancer"[TIAB] AND {RT}
+glioblastoma[TIAB] AND {RT}
+"brain metastases"[TIAB] AND {RT}
+meningioma[TIAB] AND {RT}
+lymphoma[TIAB] AND {RT}
+sarcoma[TIAB] AND {RT}
+(pediatric[TIAB] OR childhood[TIAB]) AND {RT}
+"anal cancer"[TIAB] AND {RT}
+"renal cell carcinoma"[TIAB] AND {RT}
+
+# --- physics, planning, dosimetry ---
+"treatment planning"[TIAB] AND {RT}
+("dose volume histogram"[TIAB] OR "organs at risk"[TIAB]) AND {RT}
+"normal tissue complication probability"[TIAB] OR NTCP[TIAB]
+("quality assurance"[TIAB] OR dosimetry[TIAB]) AND {RT}
+"Monte Carlo"[TIAB] AND {RT}
+"deformable image registration"[TIAB]
+("auto-segmentation"[TIAB] OR "automatic contouring"[TIAB] OR "deep learning"[TIAB]) AND {RT}
+("respiratory gating"[TIAB] OR "motion management"[TIAB]) AND {RT}
+"proton range uncertainty"[TIAB] OR "linear energy transfer"[TIAB]
+
+# --- radiobiology and fractionation ---
+hypofractionation[TIAB] OR "hypofractionated radiotherapy"[TIAB]
+("alpha beta ratio"[TIAB] OR "linear quadratic"[TIAB]) AND {RT}
+"tumor control probability"[TIAB]
+"re-irradiation"[TIAB] OR reirradiation[TIAB]
+"FLASH radiotherapy"[TIAB] OR "ultra-high dose rate"[TIAB]
+radiosensitizer[TIAB] OR radiosensitization[TIAB]
+
+# --- toxicity and outcomes ---
+"radiation pneumonitis"[TIAB]
+xerostomia[TIAB] AND {RT}
+"radiation dermatitis"[TIAB]
+"radiation necrosis"[TIAB]
+"cardiac toxicity"[TIAB] AND {RT}
+mucositis[TIAB] AND {RT}
+"late effects"[TIAB] AND {RT}
+"patient reported outcomes"[TIAB] AND {RT}
+"quality of life"[TIAB] AND {RT}
+
+# --- combined modality and emerging ---
+immunotherapy[TIAB] AND {RT}
+abscopal[TIAB]
+oligometastatic[TIAB] AND {RT}
+"palliative radiotherapy"[TIAB] OR "bone metastases"[TIAB] AND {RT}
+radiomics[TIAB] AND {RT}
+"artificial intelligence"[TIAB] AND {RT}
+"clinical trial"[TIAB] AND {RT} AND randomized[TIAB]
