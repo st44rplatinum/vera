@@ -286,3 +286,4 @@ embeddings buys nothing but risk.
 
 Python · PostgreSQL 17 · pgvector (HNSW) · PyTorch · Hugging Face Transformers ·
 MedCPT · PyMuPDF · Docker
+
