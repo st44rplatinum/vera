@@ -14,3 +14,4 @@ transformers==5.15.0
 # stages downloads in %TEMP% on C:, which has under 1 GB free. The failure mode is
 # "OSError: [Errno 28] No space left on device" while E: still shows 380 GB free.
 # torch==2.6.0+cu124
+sentencepiece==0.2.2

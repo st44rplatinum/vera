@@ -199,6 +199,72 @@ because a permissive judge would have inflated exactly the semantic result above
 
 ---
 
+## Grounded answering
+
+![Vera answer mode, citing two retrieved passages](docs/answer-mode.png)
+
+A fourth mode adds generation on top of retrieval — Qwen2.5-3B locally via Ollama.
+It is **constrained rather than trusted**: the model sees only the retrieved
+passages, must cite every claim with `[n]`, and the output is validated after
+generation. Citation indices that were never supplied are rejected, uncited
+answers get one corrective retry and are then refused, and `INSUFFICIENT` is a
+legitimate result. Asked for the capital of France, or an insulin dose, it
+declines — even though retrieval returns plausible-looking clinical text for the
+second.
+
+This is why retrieval was measured first. A wrong answer is **attributable**:
+either the right passage was not retrieved (a number this project has) or it was
+retrieved and the model misread it. Systems that fuse the two layers cannot tell
+those apart.
+
+**Greek questions** are translated to English before retrieval and the finished
+answer is translated back, both by small dedicated `opus-mt` models (56M and 78M).
+The 3B model never touches Greek: it rendered *ακτινική πνευμονίτιδα* (radiation
+pneumonitis) as "the photoinitiator disease", and generating Greek directly
+exceeded a 420-second timeout on a GTX 1050 Ti, where the round trip through
+opus-mt completes in 23–29 seconds. Citation markers are compared before and
+after back-translation; if they do not survive, the English answer is kept,
+because an answer whose citations were mangled is no longer grounded.
+
+## Flashcards, and a result that changed the design
+
+The plan was to ground existing Anki decks against the corpus: take a card, find
+the passages supporting it, quiz with citations. **It does not work, and measuring
+why was more useful than the feature would have been.**
+
+20 decks, 14,204 notes. Half are text-only (the rest carry their content in
+images), leaving 6,298 cards. Of those, 2,868 passed a bi-encoder distance
+threshold of 0.34 — but when an LLM judged whether the top passage *actually
+stated* the card's answer:
+
+| | supported |
+|---|---|
+| bi-encoder distance ≤ 0.34 | **4%** |
+| + MedCPT cross-encoder ≥ 5 | **8%** |
+| cross-encoder < 0 | 0% |
+
+Distance measures topical proximity. In a corpus whose chunks already sit at
+**0.707 mean similarity to each other**, the nearest neighbour to anything lands
+near 0.3 whether or not the corpus contains the answer — and HNSW always returns
+something.
+
+The cross-encoder was added to fix exactly that, and in isolation it does:
+for *"which nerves innervate the infrahyoid muscles?"* it rated the correct
+passage **+13.6** and a topically-adjacent one about nodal margins **−15.1**,
+where the bi-encoder saw 0.320 against 0.325. It changed the top passage for 79%
+of cards. It still only moved support from 4% to 8%.
+
+That is the reranker working, not failing. **The corpus does not contain the
+answers.** The decks ask for AJCC staging definitions, ICRP dose limits and
+chemotherapy regimens; these are 2,416 research papers, and papers report studies
+rather than defining N2 staging. No retrieval improvement fixes missing content.
+
+So the direction was inverted: cards are **generated from passages**, where
+grounding holds by construction, and the cross-encoder checks each generated
+question against its own source to catch drift. Deck grounding rates are kept as
+a coverage measurement — radiation oncology decks score 81–84%, diagnostic
+radiology 6–12% — which is a map of what this corpus can and cannot teach.
+
 ## Known limitations
 
 **Bibliography chunks leak into results.** Reference lists are the most
@@ -214,6 +280,27 @@ for a cosmetic gain. Fixing it properly means re-pooling and re-judging.
 
 **Descriptive paraphrase is not handled** — see the note at the top. This is a
 property of MedCPT's training distribution, not a bug in the pipeline.
+
+**A supported flashcard is not necessarily a useful one.** The cross-encoder
+measures whether a passage answers a question, which is not whether the question
+is worth asking. A hazard ratio from a single durvalumab trial scored **+15.9**
+and was kept; *"the most important dose-limiting toxicity in radiation"* scored
++4.7 and was rejected. Passages from methods sections reliably produce methods
+trivia. Selecting source passages by section — introduction and discussion rather
+than methods and results — is the obvious lever and is untouched.
+
+**Generation is not evaluated.** Retrieval has nDCG@10 = 0.815; the answer layer
+has anecdotes. Groundedness — does each cited claim actually appear in the passage
+it cites — needs its own gold set and its own metrics. Until that exists, the
+structural checks are the only guarantee, and they verify that a citation *exists*,
+not that it *supports* the sentence.
+
+**Greek back-translation makes terminology errors.** opus-mt rendered "residual
+secretory capacity" as *υπολειπόμενη ικανότητα μυστηρίου* — "residual capacity of
+mystery", confusing *secretory* with *secret*. It is far better than the 3B model
+at this, and still not safe for clinical wording. The English answer is preserved
+alongside the Greek in every response (`answer_english`) so the original is always
+inspectable.
 
 **The corpus is not purely English, and the chunker degrades what isn't.** PMC
 returned 17 non-English articles (mostly Chinese, identifiable by PubMed's
@@ -273,6 +360,8 @@ structure.
 | `vera/search_hybrid.py` | RRF fusion, `--mode lexical\|semantic\|hybrid` |
 | `vera/evaluate.py` | Pooled relevance judging and metrics |
 | `vera/api.py` | FastAPI search UI |
+| `vera/rag.py` | Grounded answering, Greek translation |
+| `vera/quiz.py` | Flashcard import, grounding, and generation |
 
 Schema migrations are numbered in `sql/`, applied by `scripts/apply_sql.sh`.
 
@@ -286,4 +375,3 @@ embeddings buys nothing but risk.
 
 Python · PostgreSQL 17 · pgvector (HNSW) · PyTorch · Hugging Face Transformers ·
 MedCPT · PyMuPDF · Docker
-
